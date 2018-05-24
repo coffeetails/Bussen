@@ -13,6 +13,7 @@ namespace Bussen {
 
         static void Run() {
             Console.WriteLine("=== Welcome to the bus! ===");
+
             bool continueMenu = true;
             while(continueMenu) {
                 Console.WriteLine("\nPlease choose your action\n" +
@@ -36,6 +37,9 @@ namespace Bussen {
                     Console.WriteLine("Remove passenger");
                     break;
 
+                    //      UNDERMENU 
+                    // so it's not that overwhelming
+                    // to use this program. Yay.
                     case ConsoleKey.I:
                     Console.WriteLine("Passenger interaction");
                     Console.WriteLine("[F] Find passengers with specific age\n" +
@@ -105,7 +109,7 @@ namespace Bussen {
     class Passenger {
         private string name = "";
         private int age = 0;
-        private enum gender { Female = 'X',
+        private enum gender { Female = 'X', // Still trying to figue out how this works.
                               Male = 'Y',
                               Other = 'Z' };
 
