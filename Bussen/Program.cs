@@ -31,10 +31,12 @@ namespace Bussen {
                                   "[P] Prices\n" +
                                   "[A] Add Passenger\n" +
                                   "[R] Remove Passenger\n" +
+                                  "[C] Current passengers\n" +
                                   "[I] Passenger Interaction\n" +
                                   "[Q] Quit");
                 ConsoleKeyInfo inputFromUser = Console.ReadKey(true);
                 switch(inputFromUser.Key) {
+                    // Prices
                     case ConsoleKey.P: {
                         Console.WriteLine("Prices");
                         Console.ReadKey(true);
@@ -48,6 +50,7 @@ namespace Bussen {
                         string gender = "a";
 
                         Console.WriteLine("=== Add passenger ===");
+                        // Input name
                         while(true) {
                             Console.Write("Passenger name: ");
                             try {
@@ -58,19 +61,11 @@ namespace Bussen {
                                 Console.WriteLine(ex.Message);
                             }
                         }
-                        
+                        // Input age
                         while(true) {
                             try {
                                 Console.Write("Passenger age: ");
                                 age = Convert.ToInt32(Console.ReadLine());
-                            }
-                            catch(FormatException) {
-                                Console.WriteLine("Please write an integer.");
-                            }
-                            catch(Exception ex) {
-                                Console.WriteLine(ex.Message);
-                            }
-
                             if(age > 110) { // No one over tha age of 110 takes the bus, I'm sure.
                                 Console.WriteLine("Please write a smaller integer.");
                             }
@@ -80,8 +75,16 @@ namespace Bussen {
                             else {
                                 break;  // Successful input
                             }
-                        }
+                            }
+                            catch(FormatException) {
+                                Console.WriteLine("Please write an integer.");
+                            }
+                            catch(Exception ex) {
+                                Console.WriteLine(ex.Message);
+                            }
 
+                        }
+                        // Input gender identity
                         while(true) {
                             Console.Write("Choose a gender from belove \nFemale = x \nMale = y \nOther = z \n");
                             try {
@@ -99,7 +102,6 @@ namespace Bussen {
                                 Console.WriteLine("That is out of range, please try again");
                             }
                         }
-
                         // Linear search
                         for(int i = 0; i < seats.Length; i++) {
                             if(seats[i] == null) {
@@ -110,6 +112,7 @@ namespace Bussen {
                                 continue;
                             }
                         }
+
                         Console.WriteLine("The new passenger has now boarded the bus. \n" +
                                           "Press any key to continue...");
                         Console.ReadKey(true);
@@ -119,6 +122,7 @@ namespace Bussen {
                     case ConsoleKey.R: {
                         Console.WriteLine("=== Remove passenger ===");
                         int seatNumber = 0;
+                        int index = -1;
                         foreach(Passenger person in seats) {
                             seatNumber++;
                             if(person == null) {
@@ -130,11 +134,47 @@ namespace Bussen {
                         }
                         Console.WriteLine("Choose a seatnumber for the \n" +
                                           "passenger to be removed.");
-                        int index = Convert.ToInt32(Console.ReadLine()) - 1;
+                        while(true) {
+                            try {
+                                index = Convert.ToInt32(Console.ReadLine()) - 1; // -1 to get array index instead of seat number
+                                if(index < 0 || index >= seats.Length) {
+                                    Console.WriteLine("Please choose a seat between 1 and {0}.", seats.Length);
+                                }
+                                else if(seats[index] == null) {
+                                    Console.WriteLine("That seat is already empty, please choose another one.");
+                                }
+                                else {
+                                    break;  // Successful input
+                                }
+                            }
+                            catch(FormatException) {
+                                Console.WriteLine("Please write an integer.");
+                            }
+                            catch(Exception ex) {
+                                Console.WriteLine(ex.Message);
+                            }
+
+                        }
                         Console.WriteLine("{0} has now left the bus and \n" +
                                           "seat {1} is now free to use.", seats[index].Name, index + 1);
                         seats[index] = null;
                         Console.ReadKey(true);
+                        break;
+                    }
+                    // Current passengers
+                    case ConsoleKey.C: {
+                        Console.WriteLine("Current passengers");
+                        int seatNumber = 0;
+                        foreach(Passenger person in seats) {
+                            seatNumber++;
+                            if(person == null) {
+                                    Console.WriteLine("Seatnumber {0}: This seat is empty", seatNumber);
+                            }
+                            else {
+                                Console.WriteLine("Seatnumber {0}: {1}, {2} years old, {3}.", seatNumber, person.Name, person.Age, person.GenderPronoun());
+                                //Console.WriteLine("Debug! " + person.GenderPronoun()); // Debug info
+                            }
+                        }
                         break;
                     }
 
@@ -151,7 +191,6 @@ namespace Bussen {
                                           "  [S] Sort bus by age\n" +
                                           "  [P] Poke\n" +
                                           "  [G] Current genders\n" +
-                                          "  [C] Current passengers\n" +
                                           "  [R] Return to main-menu");
                         ConsoleKeyInfo inputFromUserUndermenu = Console.ReadKey(true);
 
@@ -191,28 +230,11 @@ namespace Bussen {
                                 Console.WriteLine("Current genders ");
                                 break;
                             }
-                            // Current passengers
-                            case ConsoleKey.C: {
-                                Console.WriteLine("Current passengers");
-                                int seatNumber = 0;
-                                foreach(Passenger person in seats) {
-                                    seatNumber++;
-                                    if(person == null) {
-                                            Console.WriteLine("Seatnumber {0}: This seat is empty", seatNumber);
-                                    }
-                                    else {
-                                        Console.WriteLine("Seatnumber {0}: {1}, {2} years old, {3}.", seatNumber, person.Name, person.Age, person.GenderPronoun());
-                                        //Console.WriteLine("Debug! " + person.GenderPronoun()); // Debug info
-                                    }
-                                }
-                                break;
-                            }
                             // Return to main-menu
                             case ConsoleKey.R: {
                                 Console.WriteLine("Returns... \n");
                                 continue;
                             }
-
                         }
                         Console.WriteLine("============================\n" +
                                           "Press any key to continue...");
