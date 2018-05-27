@@ -19,13 +19,10 @@ namespace Bussen {
         public void Run() {
             Console.WriteLine("=== Welcome to the bus! ===");
 
-            //// Debug info
-            seats[0] = new Passenger("Anna Avocado", 11, "x");
-            seats[1] = new Passenger("Bärtil Banan", 22, "y");
-            seats[3] = new Passenger("Pelle Påhittad", 33, "z");
-            Console.WriteLine(0 + seats[0].Name + seats[0].Age + seats[0].Gender + "\n");
-            Console.WriteLine(1 + seats[1].Name + seats[1].Age + seats[1].Gender + "\n");
-            Console.WriteLine(3 + seats[3].Name + seats[3].Age + seats[3].Gender + "\n");
+            // Debug data
+            seats[0] = new Passenger("Anna Avocado", 11, "X");
+            seats[1] = new Passenger("Bärtil Banan", 22, "Y");
+            seats[3] = new Passenger("Pelle Påhittad", 33, "Z");
 
             bool continueMenu = true;
             while(continueMenu) {
@@ -45,16 +42,65 @@ namespace Bussen {
                     }
                     // Add passenger
                     case ConsoleKey.A: {
-                        Console.WriteLine("=== Add passenger ===");
-                        Console.Write("Passenger name: ");
-                        string name = Console.ReadLine();
-                        Console.Write("Passenger age: ");
-                        int age = Convert.ToInt32(Console.ReadLine());
-                        Console.Write("Choose a gender from belove \nFemale = x \nMale = y \nOther = z \n");
-                        inputFromUser = Console.ReadKey(true);
-                        string gender = inputFromUser.Key.ToString();
+                        // Defining data
+                        string name = "";
+                        int age = 0;
+                        string gender = "a";
 
-                        //  Linear search
+                        Console.WriteLine("=== Add passenger ===");
+                        while(true) {
+                            Console.Write("Passenger name: ");
+                            try {
+                                name = Console.ReadLine();
+                                break;  // Successful input
+                            }
+                            catch(Exception ex) {
+                                Console.WriteLine(ex.Message);
+                            }
+                        }
+                        
+                        while(true) {
+                            try {
+                                Console.Write("Passenger age: ");
+                                age = Convert.ToInt32(Console.ReadLine());
+                            }
+                            catch(FormatException) {
+                                Console.WriteLine("Please write an integer.");
+                            }
+                            catch(Exception ex) {
+                                Console.WriteLine(ex.Message);
+                            }
+
+                            if(age > 110) { // No one over tha age of 110 takes the bus, I'm sure.
+                                Console.WriteLine("Please write a smaller integer.");
+                            }
+                            else if(age < 0) { // I've never heard of anyone under the age of 0.
+                                Console.WriteLine("Please write a bigger integer.");
+                            }
+                            else {
+                                break;  // Successful input
+                            }
+                        }
+
+                        while(true) {
+                            Console.Write("Choose a gender from belove \nFemale = x \nMale = y \nOther = z \n");
+                            try {
+                                inputFromUser = Console.ReadKey(true);
+                                gender = inputFromUser.Key.ToString();
+                            }
+                            catch(Exception ex) {
+                                Console.WriteLine(ex.Message);
+                            }
+
+                            if(gender == "X" || gender == "Y" || gender == "Z") {
+                                break;  // Successful input
+                            }
+                            else {
+                                Console.WriteLine("That is out of range, please try again");
+                            }
+                        }
+
+                        // Linear search
                         for(int i = 0; i < seats.Length; i++) {
                             if(seats[i] == null) {
                                 seats[i] = new Passenger(name, age, gender);
@@ -155,7 +201,8 @@ namespace Bussen {
                                             Console.WriteLine("Seatnumber {0}: This seat is empty", seatNumber);
                                     }
                                     else {
-                                        Console.WriteLine("Seatnumber {0}: {1}, {2} years old, {3}.", seatNumber, person.Name, person.Age, person.Gender.ToString());
+                                        Console.WriteLine("Seatnumber {0}: {1}, {2} years old, {3}.", seatNumber, person.Name, person.Age, person.GenderPronoun());
+                                        //Console.WriteLine("Debug! " + person.GenderPronoun()); // Debug info
                                     }
                                 }
                                 break;
@@ -191,9 +238,12 @@ namespace Bussen {
 
 
     class Passenger {
+        // Data about passenger
         private string name;
         private int age;
         private string gender;   // I never figuerd out enum. Maybe in the future?
+        private int childAgeLimit = 15;
+        private int adultAgeLimit = 19;
 
 
         public Passenger(string _name, int _age, string _gender) {
@@ -219,27 +269,45 @@ namespace Bussen {
         }
 
 
-        public string GetGender(string gender) { // Add different variations of tites based on age
+        public string GenderPronoun() {
             switch(gender) {
                 case "X":
                 case "x":
-                    //girl
-                    //young woman
-                    //woman
+                    if(age < childAgeLimit) {
+                    gender = "girl";
+                    }
+                    else if(age > childAgeLimit && age < adultAgeLimit) {
+                    gender = "young woman";
+                    }
+                    else {
+                    gender = "woman";
+                    }
                 break;
 
                 case "Y":
                 case "y":
-                    //boy
-                    //young man
-                    //man
+                    if(age < childAgeLimit) {
+                        gender = "boy";
+                    }
+                    else if(age > childAgeLimit && age < adultAgeLimit) {
+                        gender = "young man";
+                    }
+                    else {
+                        gender = "man";
+                    }
                 break;
 
                 case "Z":
                 case "z":
-                    //child
-                    //young aduld
-                    //aduld
+                    if(age < childAgeLimit) {
+                        gender = "genderqueer child";
+                    }
+                    else if(age > childAgeLimit && age < adultAgeLimit) {
+                        gender = "genderqueer young adult";
+                    }
+                    else {
+                        gender = "genderqueer adult";
+                    }
                 break;
                 }
             return gender;
