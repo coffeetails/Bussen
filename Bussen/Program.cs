@@ -15,7 +15,8 @@ namespace Bussen {
     
     class Bus {
         Passenger[] seats = new Passenger[25];
-        
+        int maxAgeLimitPassenger = 110; // No one over tha age of 110 takes the bus, I'm sure.
+
         public void Run() {
             Console.WriteLine("=== Welcome to the bus! ===");
 
@@ -23,25 +24,18 @@ namespace Bussen {
             seats[0] = new Passenger("Anna Avocado", 11, "X");
             seats[1] = new Passenger("Bärtil Banan", 22, "Y");
             seats[3] = new Passenger("Pelle Påhittad", 33, "Z");
-
-            bool continueMenu = true;
-            while(continueMenu) {
+            
+            while(true) {
                 Console.WriteLine("\nPlease choose your action\n" +
                                   "in the menu below.\n" +
-                                  "[P] Prices\n" +
                                   "[A] Add Passenger\n" +
+                                  "[P] Price\n" +
                                   "[R] Remove Passenger\n" +
                                   "[C] Current passengers\n" +
                                   "[I] Passenger Interaction\n" +
                                   "[Q] Quit");
                 ConsoleKeyInfo inputFromUser = Console.ReadKey(true);
                 switch(inputFromUser.Key) {
-                    // Prices
-                    case ConsoleKey.P: {
-                        Console.WriteLine("Prices");
-                        Console.ReadKey(true);
-                        break;
-                    }
                     // Add passenger
                     case ConsoleKey.A: {
                         // Defining data
@@ -66,15 +60,15 @@ namespace Bussen {
                             try {
                                 Console.Write("Passenger age: ");
                                 age = Convert.ToInt32(Console.ReadLine());
-                            if(age > 110) { // No one over tha age of 110 takes the bus, I'm sure.
-                                Console.WriteLine("Please write a smaller integer.");
-                            }
-                            else if(age < 0) { // I've never heard of anyone under the age of 0.
-                                Console.WriteLine("Please write a bigger integer.");
-                            }
-                            else {
-                                break;  // Successful input
-                            }
+                                if(age > maxAgeLimitPassenger) {
+                                    Console.WriteLine("Please write a smaller integer.");
+                                }
+                                else if(age < 0) { // I've never heard of anyone under the age of 0.
+                                    Console.WriteLine("Please write a bigger integer.");
+                                }
+                                else {
+                                    break;  // Successful input
+                                }
                             }
                             catch(FormatException) {
                                 Console.WriteLine("Please write an integer.");
@@ -114,6 +108,14 @@ namespace Bussen {
                         }
 
                         Console.WriteLine("The new passenger has now boarded the bus. \n" +
+                                          "Press any key to continue...");
+                        Console.ReadKey(true);
+                        break;
+                    }
+                    // Prices
+                    case ConsoleKey.P: {
+                        Console.WriteLine("=== Price ===");
+                        Console.WriteLine("============================\n" +
                                           "Press any key to continue...");
                         Console.ReadKey(true);
                         break;
@@ -158,6 +160,8 @@ namespace Bussen {
                         Console.WriteLine("{0} has now left the bus and \n" +
                                           "seat {1} is now free to use.", seats[index].Name, index + 1);
                         seats[index] = null;
+                        Console.WriteLine("============================\n" +
+                                          "Press any key to continue...");
                         Console.ReadKey(true);
                         break;
                     }
@@ -168,13 +172,16 @@ namespace Bussen {
                         foreach(Passenger person in seats) {
                             seatNumber++;
                             if(person == null) {
-                                    Console.WriteLine("Seatnumber {0}: This seat is empty", seatNumber);
+                                Console.WriteLine("Seatnumber {0}: This seat is empty", seatNumber);
                             }
                             else {
                                 Console.WriteLine("Seatnumber {0}: {1}, {2} years old, {3}.", seatNumber, person.Name, person.Age, person.GenderPronoun());
                                 //Console.WriteLine("Debug! " + person.GenderPronoun()); // Debug info
                             }
                         }
+                        Console.WriteLine("============================\n" +
+                                          "Press any key to continue...");
+                        Console.ReadKey(true);
                         break;
                     }
 
@@ -193,21 +200,88 @@ namespace Bussen {
                                           "  [G] Current genders\n" +
                                           "  [R] Return to main-menu");
                         ConsoleKeyInfo inputFromUserUndermenu = Console.ReadKey(true);
-
                         switch(inputFromUserUndermenu.Key) {
                             // Find passengers with specific age
-                            case ConsoleKey.F: { 
-                            Console.WriteLine("Find passengers with specific age");
+                            case ConsoleKey.F: {
+                                Console.WriteLine("=== Passengers with specific age ===");
+
+                                int findSpecificAge = 0;
+                                while(true) {
+                                    Console.Write("Desired age to find among passengers: ");
+                                    try {
+                                        findSpecificAge = Convert.ToInt32(Console.ReadLine());
+                                        if(findSpecificAge > maxAgeLimitPassenger) {
+                                            Console.WriteLine("Please write a smaller integer.");
+                                        }
+                                        else if(findSpecificAge < 0) {
+                                            Console.WriteLine("Please write a bigger integer.");
+                                        }
+                                        else {
+                                            break;  // Successful input
+                                        }
+                                    }
+                                    catch(FormatException) {
+                                        Console.WriteLine("Please write an integer.");
+                                    }
+                                    catch(Exception ex) {
+                                        Console.WriteLine(ex.Message);
+                                    }
+                                }
+
+                                /*  Search for the passenger and also      *\
+                                \* count how many matches the desired age. */
+                                int numberOfFoundPassengers = 0;
+                                foreach(Passenger person in seats) {
+                                    if(person == null) {
+                                        continue;   // Seat is empty
+                                    }
+                                    else if(person.Age == findSpecificAge) {
+                                        Console.WriteLine(person.Name);
+                                        numberOfFoundPassengers++;
+                                    }
+                                    else {
+                                        continue;
+                                    }
+                                }
+
+                                if(numberOfFoundPassengers == 0) {
+                                    Console.WriteLine("\nNo passengers matched your search.");
+                                }
+                                else {
+                                    Console.WriteLine("\nYou got {0} matches on your search.", numberOfFoundPassengers);
+                                }
                                 break;
                             }
                             // Total age
                             case ConsoleKey.T: {
-                                Console.WriteLine("Total age");
+                                Console.WriteLine("=== Total age ===");
+                                int totalAgeOfPassengers = 0;
+                                foreach(Passenger person in seats) {
+                                    if(person == null) {
+                                        continue;   // Seat is empty
+                                    }
+                                    else {
+                                        totalAgeOfPassengers += person.Age;
+                                    }
+                                }
+                                Console.WriteLine("The total age of the current passengers is {0} years.", totalAgeOfPassengers);
                                 break;
                             }
                             // Average age
                             case ConsoleKey.A: {
-                                Console.WriteLine("Average age");
+                                Console.WriteLine("=== Average age ===");
+                                int numberOfPassengers = 0;
+                                int totalAgeOfPassengers = 0;
+                                foreach(Passenger person in seats) {
+                                    if(person == null) {
+                                        continue;   // Seat is empty
+                                    }
+                                    else {
+                                        totalAgeOfPassengers += person.Age;
+                                        numberOfPassengers++;
+                                    }
+                                }
+                                Console.WriteLine("The average age of the current passengers is {0}years.", totalAgeOfPassengers/numberOfPassengers);
                                 break;
                             }
                             // Max age
@@ -232,8 +306,13 @@ namespace Bussen {
                             }
                             // Return to main-menu
                             case ConsoleKey.R: {
-                                Console.WriteLine("Returns... \n");
+                                Console.WriteLine("Returns... \n" +
+                                                    "============================");
                                 continue;
+                            }
+                            default: {
+                                Console.WriteLine("Please choose something in the menu");
+                                break;
                             }
                         }
                         Console.WriteLine("============================\n" +
