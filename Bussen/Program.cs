@@ -41,7 +41,7 @@ namespace Bussen {
                         AddPassenger();
                         break;
                     }
-                    // Prices*
+                    // Prices
                     case ConsoleKey.P: {
                         Prices();
                         break;
@@ -65,7 +65,7 @@ namespace Bussen {
                                           "  [M] Max age\n" +
                                           "  [S] Sort bus by age\n" +
                                           "  [P] Poke\n" +
-                                          "  [G] Current genders\n" +
+                                          "  [C] Current genders\n" +
                                           "  [R] Return to main-menu");
                         ConsoleKeyInfo inputFromUserUndermenu = Console.ReadKey(true);
                         switch(inputFromUserUndermenu.Key) {
@@ -84,23 +84,23 @@ namespace Bussen {
                                 AverageAge();
                                 break;
                             }
-                            // Max age*
+                            // Max age
                             case ConsoleKey.M: {
                                 MaxAge();
                                 break;
                             }
-                            // Sort bus by age*
+                            // Sort bus by age
                             case ConsoleKey.S: {
                                 SortBusByAge();
                                 break;
                             }
-                            // Poke*
+                            // Poke
                             case ConsoleKey.P: {
                                 Poke();
                                 break;
                             }
-                            // Current genders*
-                            case ConsoleKey.G: {
+                            // Current genders
+                            case ConsoleKey.C: {
                                 PrintGender();
                                 break;
                             }
@@ -115,9 +115,6 @@ namespace Bussen {
                                 break;
                             }
                         }
-                        Console.WriteLine("============================\n" +
-                                          "Press any key to continue...");
-                        Console.ReadKey(true);
                         break;
                         //=== END OF SUB-MENU ===\\
                     }
@@ -207,13 +204,25 @@ namespace Bussen {
                     continue;
                 }
             }
+            Prices(age);
             Console.WriteLine("The new passenger has now boarded the bus. \n" +
                                           "Press any key to continue...");
         }
 
         private void Prices()/* TODO prices */ {
+            
             Console.Clear();
+            Console.WriteLine("=== Prices ===\n" + 
+                              "Make a list of prices\n" + 
+                              "============================\n" +
+                              "Press any key to continue...");
+            Console.ReadKey(true);
+        }
+
+        private void Prices(int age)/* TODO prices overload */ {
             Console.WriteLine("=== Prices ===");
+
+            // Print price based on passengers age and gender.
 
             Console.WriteLine("============================\n" +
                               "Press any key to continue...");
@@ -419,15 +428,27 @@ namespace Bussen {
         }
 
         private void SortBusByAge()/* TODO sort bus by age */ {
-            // Defining data
-            int i;
-            int j;
-            int currentIndex;
-
             Console.Clear();
-            Console.WriteLine("=== Sort the bus by age ===");
+            Console.WriteLine("=== Sort the bus by age ===\n" +
+                              "Sorting...");
 
-            //Some fucking ass shit code
+            /* Make a list                  *\
+             * Put passengers in list       *
+             * Sort list                    *
+             * Put sorted list in array     *
+            \* Win                          */
+            
+            int seatNumber = 0;
+            foreach(Passenger person in seats) {
+                seatNumber++;
+                if(person == null) {
+                    Console.WriteLine("Seatnumber {0}: This seat is empty", seatNumber);
+                }
+                else {
+                    Console.WriteLine("Seatnumber {0}: {1}, {2} years old, {3}.", seatNumber, person.Name, person.Age, person.GenderPronoun());
+                    //Console.WriteLine("Debug! " + person.GenderPronoun()); // Debug info
+                }
+            }
 
             Console.WriteLine("============================\n" +
                               "Press any key to continue...");
@@ -437,6 +458,8 @@ namespace Bussen {
         private void Poke()/* TODO poke */ {
             Console.Clear();
             Console.WriteLine("=== Poke a passenger ===");
+
+            // POKE!
 
             Console.WriteLine("============================\n" +
                               "Press any key to continue...");
