@@ -19,9 +19,10 @@ namespace Bussen {
 
         public void Run() {
             // Debug data
-            seats[0] = new Passenger("Anna Avocado", 11, "X");
-            seats[1] = new Passenger("Bärtil Banan", 22, "Y");
-            seats[3] = new Passenger("Pelle Påhittad", 33, "Z");
+            seats[0] = new Passenger("Anna Avocado", 10, "X");
+            seats[1] = new Passenger("Bärtil Banan", 20, "Y");
+            seats[3] = new Passenger("Pelle Påhittad", 15, "Z");
+            seats[4] = new Passenger("Sanna Citron", 5, "X");
             
             while(true) {
                 Console.Clear();
@@ -427,17 +428,47 @@ namespace Bussen {
             Console.ReadKey(true);
         }
 
-        private void SortBusByAge()/* TODO sort bus by age */ {
+        private void SortBusByAge() {
             Console.Clear();
             Console.WriteLine("=== Sort the bus by age ===\n" +
-                              "Sorting...");
+                              "Sorting bus...\n");
 
-            /* Make a list                  *\
-             * Put passengers in list       *
-             * Sort list                    *
-             * Put sorted list in array     *
-            \* Win                          */
-            
+            List<Passenger> temporarySortingList = new List<Passenger>();
+
+            // Adds all passengers in the temporary list
+            foreach(Passenger person in seats) {
+                if(person == null) {
+                    continue;
+                }
+                else {
+                    temporarySortingList.Add(person);
+                }
+            }
+            // Selection sort in temporary list
+            for(int i = 0; i < temporarySortingList.Count; i++) {
+                int currentIntex = i;
+                for(int j = i + 1; j < temporarySortingList.Count; j++) {
+                    if (temporarySortingList[j].Age < temporarySortingList[currentIntex].Age) {
+                        currentIntex = j;
+                    }
+                }
+                if(currentIntex != i) {
+                    Passenger temporaryValueHolder = temporarySortingList[i];
+                    temporarySortingList[i] = temporarySortingList[currentIntex];
+                    temporarySortingList[currentIntex] = temporaryValueHolder;
+                }
+            }
+            //foreach(Passenger temporaryPerson in temporarySortingList) {
+            //    Console.WriteLine(temporaryPerson.Name + temporaryPerson.Age); //Debug info. Should be sorted.
+            //}
+            // Clear all seats
+            Array.Clear(seats, 0, seats.Length - 1);
+            // Add all passengers, now sorted in age
+            for(int i = 0; i < temporarySortingList.Count; i++) {
+                seats[i] = (temporarySortingList[i]);
+                Console.WriteLine(i);
+            }
+            // Print new passenger order
             int seatNumber = 0;
             foreach(Passenger person in seats) {
                 seatNumber++;
@@ -446,7 +477,6 @@ namespace Bussen {
                 }
                 else {
                     Console.WriteLine("Seatnumber {0}: {1}, {2} years old, {3}.", seatNumber, person.Name, person.Age, person.GenderPronoun());
-                    //Console.WriteLine("Debug! " + person.GenderPronoun()); // Debug info
                 }
             }
 
