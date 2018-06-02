@@ -15,25 +15,35 @@ namespace Bussen {
     
     class Bus {
         Passenger[] seats = new Passenger[25];
-        int maxAgeLimitPassenger = 110; // No one over tha age of 110 takes the bus, I'm sure.
+        int maxAgeLimitPassenger = 110; // No one over the age of 110 takes the bus, I'm sure.
+        int adultPrice = 75;
+        int adolecentPrice = 50;
+        int childPrice = 25;
+        int adultLimit = 25;
+        int childLimit = 13;
 
         public void Run() {
             // Debug data
-            seats[0] = new Passenger("Anna Avocado", 10, "X");
-            seats[1] = new Passenger("Bärtil Banan", 20, "Y");
-            seats[3] = new Passenger("Pelle Påhittad", 15, "Z");
-            seats[4] = new Passenger("Sanna Citron", 5, "X");
-            
+            seats[0] = new Passenger("Anna Avocado", 5, "X");
+            seats[1] = new Passenger("Nina Andersson", 40, "X");
+            seats[2] = new Passenger("Johanna Plåt", 14, "X");
+            seats[4] = new Passenger("Peter Sten", 50, "Y");
+            seats[5] = new Passenger("Johan Pälsbralla", 17, "Y");
+            seats[6] = new Passenger("Anders Pinjata", 7, "Y");
+            seats[8] = new Passenger("Robin Randig", 19, "Z");
+            seats[9] = new Passenger("Love Lallare", 10, "Z");
+            seats[10] = new Passenger("Ellis Enbär", 70, "Z");
+
             while(true) {
                 Console.Clear();
                 Console.WriteLine("=== Welcome to the bus! ===");
                 Console.WriteLine("\nPlease choose your action\n" +
                                   "in the menu below.\n" +
                                   "[A] Add Passenger\n" +
-                                  "[P] Prices\n" +
+                                  "[S] Show prices\n" +
                                   "[R] Remove Passenger\n" +
                                   "[C] Current passengers\n" +
-                                  "[I] Passenger Interaction\n" +
+                                  "[P] Passenger Interaction\n" +
                                   "[Q] Quit");
                 ConsoleKeyInfo inputFromUser = Console.ReadKey(true);
                 switch(inputFromUser.Key) {
@@ -43,8 +53,16 @@ namespace Bussen {
                         break;
                     }
                     // Prices
-                    case ConsoleKey.P: {
-                        Prices();
+                    case ConsoleKey.S: {
+                        Console.Clear();
+                        Console.WriteLine("==== Prices for the bus ====\n" +
+                                          "{0}kr for passengers of age {3} or older\n" +
+                                          "{1}kr for passengers of age over {4} and under {3}\n" +
+                                          "{2}kr for passengers of age {4} or under", adultPrice, adolecentPrice, childPrice
+                                                                                    , adultLimit, childLimit);
+                        Console.WriteLine("============================\n" +
+                              "Press any key to continue...");
+                        Console.ReadKey(true);
                         break;
                     }
                     // Remove passenger
@@ -58,7 +76,7 @@ namespace Bussen {
                         break;
                     }
                     // Sub-menu
-                    case ConsoleKey.I: {
+                    case ConsoleKey.P: {
                         Console.WriteLine("===== Passenger interaction =====");
                         Console.WriteLine("  [F] Find passengers with specific age\n" +
                                           "  [T] Total age\n" +
@@ -136,9 +154,9 @@ namespace Bussen {
         //      METHODS FOR THE MAIN-MENU
         private void AddPassenger() {
             // Defining data
-            string name = "";
-            int age = 0;
-            string gender = "a";
+            string newName = "";
+            int newAge = 0;
+            string newGender = "a";
             ConsoleKeyInfo userInput;
 
             Console.Clear();
@@ -147,7 +165,7 @@ namespace Bussen {
             while(true) {
                 Console.Write("Passenger name: ");
                 try {
-                    name = Console.ReadLine();
+                    newName = Console.ReadLine();
                     break;  // Successful input
                 }
                 catch(Exception ex) {
@@ -158,11 +176,11 @@ namespace Bussen {
             while(true) {
                 try {
                     Console.Write("Passenger age: ");
-                    age = Convert.ToInt32(Console.ReadLine());
-                    if(age > maxAgeLimitPassenger) {
+                    newAge = Convert.ToInt32(Console.ReadLine());
+                    if(newAge > maxAgeLimitPassenger) {
                         Console.WriteLine("Please write a smaller integer.");
                     }
-                    else if(age < 0) { // I've never heard of anyone under the age of 0.
+                    else if(newAge < 0) { // I've never heard of anyone under the age of 0.
                         Console.WriteLine("Please write a bigger integer.");
                     }
                     else {
@@ -182,13 +200,13 @@ namespace Bussen {
                 Console.Write("Choose a gender from belove \nFemale = x \nMale = y \nOther = z \n");
                 try {
                     userInput = Console.ReadKey(true);
-                    gender = userInput.Key.ToString();
+                    newGender = userInput.Key.ToString();
                 }
                 catch(Exception ex) {
                     Console.WriteLine(ex.Message);
                 }
 
-                if(gender == "X" || gender == "Y" || gender == "Z") {
+                if(newGender == "X" || newGender == "Y" || newGender == "Z") {
                     break;  // Successful input
                 }
                 else {
@@ -198,32 +216,63 @@ namespace Bussen {
             // Linear search
             for(int i = 0; i < seats.Length - 1; i++) {
                 if(seats[i] == null) {
-                    seats[i] = new Passenger(name, age, gender);
+                    seats[i] = new Passenger(newName, newAge, newGender);
                     break;
                 }
                 else {
                     continue;
                 }
             }
-            Prices(age);
+
+            Console.WriteLine(); // To get some space
+            Prices(newName, newAge, newGender);
             Console.WriteLine("The new passenger has now boarded the bus. \n" +
                                           "Press any key to continue...");
         }
-
-        private void Prices()/* TODO prices */ {
-            
-            Console.Clear();
-            Console.WriteLine("=== Prices ===\n" + 
-                              "Make a list of prices\n" + 
-                              "============================\n" +
-                              "Press any key to continue...");
-            Console.ReadKey(true);
-        }
-
-        private void Prices(int age)/* TODO prices overload */ {
-            Console.WriteLine("=== Prices ===");
-
-            // Print price based on passengers age and gender.
+        
+        private void Prices(string name, int age, string gender) {
+            // Adults
+            if(age >= adultLimit) {
+                switch(gender) {
+                    case "X": // female
+                    Console.WriteLine("Greetings Madam {0}. It will cost you {1}kr",name ,adultPrice);
+                    break;
+                    case "Y": // male
+                    Console.WriteLine("Hello Mister {0}. It will cost you {1}kr", name, adultPrice);
+                    break;
+                    case "Z": // queer
+                    Console.WriteLine("Greetings {0}. It will cost you {1}kr, Mirdam", name, adultPrice); // Mirdam = Madam + Mister
+                    break;
+                }
+            }
+            // Adolecents
+            else if(age < adultLimit && age > childLimit) {
+                switch(gender) {
+                    case "X": // female
+                    Console.WriteLine("Hello young woman, that will be {0}kr, {1}", adolecentPrice, name);
+                    break;
+                    case "Y": // male
+                    Console.WriteLine("Hey, that will be {0}kr for you {1}", adolecentPrice, name);
+                    break;
+                    case "Z": // queer
+                    Console.WriteLine("Oh hello {0}. That will be {1}kr, youngster", name, adolecentPrice);
+                    break;
+                }
+            }
+            // Children
+            else if(age <= childLimit) {
+                switch(gender) {
+                    case "X": // female
+                    Console.WriteLine("Oh hello little {0}, this will cost you {1}kr", name, childPrice);
+                    break;
+                    case "Y": // male
+                    Console.WriteLine("Hi boy, this will cost {0}kr, {1}", childPrice, name);
+                    break;
+                    case "Z": // queer
+                    Console.WriteLine("Hello child, it will cost {0}kr for you, {1}", childPrice, name);
+                    break;
+                }
+            }
 
             Console.WriteLine("============================\n" +
                               "Press any key to continue...");
@@ -292,7 +341,6 @@ namespace Bussen {
                 }
                 else {
                     Console.WriteLine("Seatnumber {0}: {1}, {2} years old, {3}.", seatNumber, person.Name, person.Age, person.GenderPronoun());
-                    //Console.WriteLine("Debug! " + person.GenderPronoun()); // Debug info
                 }
             }
             Console.WriteLine("============================\n" +
@@ -419,7 +467,7 @@ namespace Bussen {
                     continue;
                 }
                 else if(person.Age == oldest) {
-                    Console.WriteLine(person.Name);
+                    Console.WriteLine("{0} with {1}years", person.Name, person.Age);
                 }
             }
 
@@ -430,8 +478,7 @@ namespace Bussen {
 
         private void SortBusByAge() {
             Console.Clear();
-            Console.WriteLine("=== Sort the bus by age ===\n" +
-                              "Sorting bus...\n");
+            Console.WriteLine("=== Sort the bus by age ===");
 
             List<Passenger> temporarySortingList = new List<Passenger>();
 
@@ -458,15 +505,11 @@ namespace Bussen {
                     temporarySortingList[currentIntex] = temporaryValueHolder;
                 }
             }
-            //foreach(Passenger temporaryPerson in temporarySortingList) {
-            //    Console.WriteLine(temporaryPerson.Name + temporaryPerson.Age); //Debug info. Should be sorted.
-            //}
             // Clear all seats
             Array.Clear(seats, 0, seats.Length - 1);
             // Add all passengers, now sorted in age
             for(int i = 0; i < temporarySortingList.Count; i++) {
                 seats[i] = (temporarySortingList[i]);
-                Console.WriteLine(i);
             }
             // Print new passenger order
             int seatNumber = 0;
@@ -485,11 +528,90 @@ namespace Bussen {
             Console.ReadKey(true);
         }
 
-        private void Poke()/* TODO poke */ {
-            Console.Clear();
-            Console.WriteLine("=== Poke a passenger ===");
+        private void Poke() {
+            // Defining data
+            int seatNumber = 0;
+            int index = -1;
 
-            // POKE!
+            Console.Clear();
+            Console.WriteLine("=== Poke passenger ===");
+            // Prints current passengers
+            foreach(Passenger person in seats) {
+                seatNumber++;
+                if(person == null) {
+                    Console.WriteLine("Seatnumber {0}: This seat is empty", seatNumber);
+                }
+                else {
+                    Console.WriteLine("Seatnumber {0}: {1}, {2} years old, {3}.", seatNumber, person.Name, person.Age, person.GenderPronoun());
+                }
+            }
+            Console.WriteLine("Choose a seatnumber for the \n" +
+                              "passenger you want to poke.");
+            // User input
+            while(true) {
+                try {
+                    index = Convert.ToInt32(Console.ReadLine()) - 1; // -1 to get array index instead of seat number
+                    if(index < 0 || index >= seats.Length) {
+                        Console.WriteLine("Please choose a seat between 1 and {0}.", seats.Length);
+                    }
+                    else if(seats[index] == null) {
+                        Console.WriteLine("That seat is empty, please choose another one.");
+                    }
+                    else {
+                        break;  // Successful input
+                    }
+                }
+                catch(FormatException) {
+                    Console.WriteLine("Please write an integer.");
+                }
+                catch(Exception ex) {
+                    Console.WriteLine(ex.Message);
+                }
+
+            }
+            // Output
+                // Adults
+            if(seats[index].Age >= adultLimit) {
+                switch(seats[index].Gender) {
+                    case "X": // female
+                    Console.WriteLine("{0} says with a laugh: Oh!, silly you!", seats[index].Name);
+                    break;
+                    case "Y": // male
+                    Console.WriteLine("{0} asks: Yes? What is it?", seats[index].Name);
+                    break;
+                    case "Z": // queer
+                    Console.WriteLine("{0} smiles softly", seats[index].Name);
+                    break;
+                }
+            }
+                // Adolecents
+            else if(seats[index].Age < adultLimit && seats[index].Age > childLimit) {
+                switch(seats[index].Gender) {
+                    case "X": // female
+                    Console.WriteLine("{0} pokes back and says: Is this a poke war?", seats[index].Name);
+                    break;
+                    case "Y": // male
+                    Console.WriteLine("{0} says annoyingly: Screw you... ", seats[index].Name);
+                    break;
+                    case "Z": // queer
+                    Console.WriteLine("{0} smiles and says: Hh, stop it!", seats[index].Name);
+                    break;
+                }
+            }
+                // Children
+            else if(seats[index].Age <= childLimit) {
+                switch(seats[index].Gender) {
+                    case "X": // female
+                    Console.WriteLine("{0} giggles and pokes you back", seats[index].Name);
+                    break;
+                    case "Y": // male
+                    Console.WriteLine("{0} stares with big eyes.", seats[index].Name);
+                    break;
+                    case "Z": // queer
+                    Console.WriteLine("{0} giggles happily", seats[index].Name);
+                    break;
+                }
+            }
 
             Console.WriteLine("============================\n" +
                               "Press any key to continue...");
