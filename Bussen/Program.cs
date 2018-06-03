@@ -16,23 +16,15 @@ namespace Bussen {
     class Bus {
         Passenger[] seats = new Passenger[25];
         int maxAgeLimitPassenger = 110; // No one over the age of 110 takes the bus, I'm sure.
+
         int adultPrice = 75;
         int adolecentPrice = 50;
         int childPrice = 25;
+
         int adultLimit = 25;
         int childLimit = 13;
 
         public void Run() {
-            // Debug data
-            seats[0] = new Passenger("Anna Avocado", 5, "X");
-            seats[1] = new Passenger("Nina Andersson", 40, "X");
-            seats[2] = new Passenger("Johanna Plåt", 14, "X");
-            seats[4] = new Passenger("Peter Sten", 50, "Y");
-            seats[5] = new Passenger("Johan Pälsbralla", 17, "Y");
-            seats[6] = new Passenger("Anders Pinjata", 7, "Y");
-            seats[8] = new Passenger("Robin Randig", 19, "Z");
-            seats[9] = new Passenger("Love Lallare", 10, "Z");
-            seats[10] = new Passenger("Ellis Enbär", 70, "Z");
 
             while(true) {
                 Console.Clear();
