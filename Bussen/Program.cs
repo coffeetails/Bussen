@@ -188,8 +188,8 @@ namespace Bussen {
             while(true) {
                 Console.Write("Choose a gender from belove \nFemale = x \nMale = y \nOther = z \n");
                 try {
-                    userInput = Console.ReadKey(true);
-                    newGender = userInput.Key.ToString();
+                    userInput = Console.ReadKey(true);  //Save the users input as a ConsoleKeyInfo
+                    newGender = userInput.Key.ToString(); // Convert that ConsoleKeyInfo to a string
                 }
                 catch(Exception ex) {
                     Console.WriteLine(ex.Message);
